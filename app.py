@@ -5,7 +5,7 @@ from skimage.metrics import peak_signal_noise_ratio as psnr, structural_similari
 import streamlit as st
 
 st.set_page_config(
-    page_title="Khử Nhiễu Ảnh Số - TV5 & TV4", layout="wide"
+    page_title="Khử Nhiễu Ảnh Số", layout="wide"
 )
 
 st.title("HỆ THỐNG KHỬ NHIỄU ẢNH SỐ - TÍCH HỢP DEMO")
@@ -17,7 +17,6 @@ uploaded_file = st.file_uploader(
 
 if uploaded_file is not None:
   file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-  # Đọc ảnh màu chuyển sang ảnh xám (hoặc giữ nguyên màu tùy ý, ở đây dùng ảnh xám giống code TV4)
   clean_img = cv2.imdecode(file_bytes, cv2.IMREAD_GRAYSCALE)
 
   st.sidebar.header("Cấu hình mô phỏng")
@@ -65,7 +64,7 @@ if uploaded_file is not None:
         " Filter**."
     )
 
-  # Lựa chọn bộ lọc (Đã có Bilateral của bạn và Median của TV4)
+  # Lựa chọn bộ lọc 
   filter_choice = st.selectbox(
       "Lựa chọn bộ lọc:",
       [
@@ -90,7 +89,7 @@ if uploaded_file is not None:
     )
 
   elif "Median Filter" in filter_choice:
-    # --- TÍCH HỢP CODE CỦA TV4 VÀO ĐÂY ---
+    #TV4
     kernel_median = st.sidebar.slider(
         "Kích thước Kernel Median:", 3, 9, 3, step=2
     )
