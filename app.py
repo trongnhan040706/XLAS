@@ -8,7 +8,7 @@ st.set_page_config(
     page_title="Khử Nhiễu Ảnh Số", layout="wide"
 )
 
-st.title("HỆ THỐNG KHỬ NHIỄU ẢNH SỐ")
+st.title("KHỬ NHIỄU ẢNH SỐ")
 st.markdown("---")
 
 uploaded_file = st.file_uploader(
