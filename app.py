@@ -68,10 +68,10 @@ if uploaded_file is not None:
   filter_choice = st.selectbox(
       "Lựa chọn bộ lọc:",
       [
-          "Bilateral Filter (TV5 - Của bạn)",
-          "Median Filter (TV4 - Đã tích hợp)",
-          "Mean Filter (Chờ code TV2)",
-          "Gaussian Filter (Chờ code TV3)",
+          "Bilateral Filter ",
+          "Median Filter ",
+          "Mean Filter ",
+          "Gaussian Filter ",
       ],
   )
 
