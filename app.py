@@ -81,7 +81,7 @@ if uploaded_file is not None:
   start_time = time.perf_counter()
   if "Bilateral Filter" in filter_choice:
     st.sidebar.markdown("---")
-    st.sidebar.subheader("Thông số Bilateral Filter (TV5)")
+    st.sidebar.subheader("Thông số Bilateral Filter")
     d = st.sidebar.slider("Đường kính lân cận (d):", 5, 15, 9)
     sigma_color = st.sidebar.slider("Sigma Color:", 10, 150, 75)
     sigma_space = st.sidebar.slider("Sigma Space:", 10, 150, 75)
