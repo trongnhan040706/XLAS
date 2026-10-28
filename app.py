@@ -172,7 +172,7 @@ st.markdown(
 st.markdown(
     """
 <div class="huit-header">
-    <img src="logo_huit.png" alt="Logo HUIT" style="width: 55px; height: 55px; object-fit: contain; border-radius: 50%; background: #ffffff; padding: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+    <img src=""C:\Users\trongnhan0407\Downloads\logotruong.jpg"" alt="Logo HUIT" style="width: 55px; height: 55px; object-fit: contain; border-radius: 50%; background: #ffffff; padding: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
     <div class="huit-title-box">
         <div class="huit-school">TRƯỜNG ĐẠI HỌC CÔNG THƯƠNG TP.HCM</div>
         <div class="huit-dept">Khoa Công nghệ thông tin · Bộ môn Khoa học dữ liệu và AI</div>
