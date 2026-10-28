@@ -315,7 +315,7 @@ st.info(f"📌 **Trạng thái ảnh hiện tại:** {img_status}")
 
 
 # 5. Hàm Sinh Nhiễu Chuẩn Xác
-def add_gaussian_noise(image, var=0.001):
+def add_gaussian_noise(image, var=0.01):
   sigma = (var**0.5) * 255.0
   gauss = np.random.normal(0, sigma, image.shape)
   noisy = image.astype(np.float32) + gauss
@@ -344,10 +344,10 @@ noise_type = st.sidebar.selectbox(
 if "Gaussian" in noise_type:
   var_val = st.sidebar.slider(
       "Phương sai nhiễu (Variance - var):",
-      min_value=0.010,
+      min_value=0.001,
       max_value=0.050,
       value=0.010,
-      step=0.005,
+      step=0.001,
       format="%.3f",
       help=(
           "Mức 0.01 là mốc chuẩn thực nghiệm (sigma = 25.5 mức xám). Mức 0.05"
