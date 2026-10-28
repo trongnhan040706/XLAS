@@ -48,7 +48,6 @@ if uploaded_file is not None:
         value=0.01,
         step=0.005,
         format="%.3f",
-)
         )
         noisy_img = add_gaussian_noise(clean_img, var=var)
     else:
