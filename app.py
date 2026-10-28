@@ -1,10 +1,9 @@
-import time
-import cv2
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-from skimage.metrics import peak_signal_noise_ratio as psnr, structural_similarity as ssim
-import streamlit as st
+streamlit
+opencv-python-headless
+numpy
+pandas
+scikit-image
+matplotlib
 
 st.set_page_config(
     page_title="HUIT · Hệ Thống Khử Nhiễu & Lọc Không Gian Số",
