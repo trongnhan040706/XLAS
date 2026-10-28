@@ -42,12 +42,13 @@ if uploaded_file is not None:
     # Tạo ảnh nhiễu tương ứng
     if noise_type == "Gaussian Noise":
         var = st.sidebar.slider(
-            "Độ phương sai (Variance):",
-            min_value=0.001,
-            max_value=0.050,
-            value=0.010,
-            step=0.001,
-            format="%.3f"
+        "Độ phương sai (Variance):",
+        min_value=0.01,
+        max_value=0.05,
+        value=0.01,
+        step=0.005,
+        format="%.3f",
+)
         )
         noisy_img = add_gaussian_noise(clean_img, var=var)
     else:
