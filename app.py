@@ -31,7 +31,7 @@ if uploaded_file is not None:
         noisy = image.astype(np.float32) + gauss
         return np.clip(noisy, 0, 255).astype(np.uint8)
 
-    # Hàm tạo nhiễu Salt and Pepper (Vectorized bằng NumPy để chạy mượt mà, không bị lag)
+    # Hàm tạo nhiễu Salt and Pepper 
     def add_salt_and_pepper_noise(image, prob=0.05):
         output = image.copy()
         rdn = np.random.random(image.shape)
@@ -41,7 +41,6 @@ if uploaded_file is not None:
 
     # Tạo ảnh nhiễu tương ứng
     if noise_type == "Gaussian Noise":
-        # SỬA TẠI ĐÂY: Thêm step=0.001 và format="%.3f" để kéo mượt mà từ 0.001 chạm đúng 0.050
         var = st.sidebar.slider(
             "Độ phương sai (Variance):",
             min_value=0.001,
@@ -72,7 +71,7 @@ if uploaded_file is not None:
             "Gợi ý tự động: Phát hiện nhiễu Salt & Pepper -> Đề xuất sử dụng **Median Filter**."
         )
 
-    # Lựa chọn bộ lọc của các thành viên trong nhóm
+    # Lựa chọn bộ lọc của các thành viên 
     filter_choice = st.selectbox(
         "Lựa chọn bộ lọc khử nhiễu:",
         [
