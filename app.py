@@ -193,7 +193,7 @@ st.markdown(
     <div class="hero-h1">HỆ THỐNG KHẢO SÁT & ĐỐI CHỨNG 4 BỘ LỌC KHÔNG GIAN</div>
     <p class="hero-p">
         Hệ thống tích hợp đầy đủ cơ sở toán học, ma trận kernel tham chiếu, đồ thị mặt phẳng cắt lát phân tích mức xám 
-        (Intensity Profile) và bộ chỉ số định lượng tiêu chuẩn quốc tế (PSNR, SSIM, Processing Time) nhằm đánh giá 
+       và bộ chỉ số định lượng tiêu chuẩn quốc tế (PSNR, SSIM, Processing Time) nhằm đánh giá 
         chính xác tương quan giữa <b>Mean, Gaussian, Median và Bilateral Filter</b> trên các mô hình nhiễu thực tế.
     </p>
 </div>
@@ -356,7 +356,7 @@ if "Gaussian" in noise_type:
   )
   noisy_img = add_gaussian_noise(clean_img, var=var_val)
   st.sidebar.caption(
-      f"👉 Độ lệch chuẩn pixel tương đương: σ ≈ {((var_val**0.5)*255):.1f} mức"
+      f"Độ lệch chuẩn pixel tương đương: σ ≈ {((var_val**0.5)*255):.1f} mức"
       " xám"
   )
 else:
@@ -373,7 +373,7 @@ else:
       ),
   )
   noisy_img = add_salt_and_pepper_noise(clean_img, prob=prob_val)
-  st.sidebar.caption(f"👉 Mật độ hạt xung: {int(prob_val*100)}% toàn bộ ảnh")
+  st.sidebar.caption(f" Mật độ hạt xung: {int(prob_val*100)}% toàn bộ ảnh")
 
 # 7. Sidebar Lựa Chọn Bộ Lọc Khử Nhiễu
 st.sidebar.markdown("---")
@@ -433,7 +433,7 @@ ssim_filtered = ssim(clean_img, filtered_img, data_range=255)
 col_visual, col_theory = st.columns([1.3, 0.7])
 
 with col_visual:
-  st.markdown("### 🖼️ Kết Quả So Sánh Hình Ảnh Song Song")
+  st.markdown("###  Kết Quả So Sánh Hình Ảnh Song Song")
   c_img1, c_img2, c_img3 = st.columns(3)
   with c_img1:
     st.image(
@@ -455,7 +455,7 @@ with col_visual:
     )
 
   st.markdown(
-      "#### 📈 Phân Tích Lát Cắt Mức Xám (Intensity Cross-Section Profile)"
+      "####  Phân Tích Lát Cắt Mức Xám "
   )
   st.caption(
       "Đường cắt ngang tại hàng giữa ảnh đi xuyên qua các cạnh nét để kiểm tra"
@@ -507,7 +507,7 @@ with col_visual:
   st.pyplot(fig)
 
 with col_theory:
-  st.markdown("### 💡 Bản Chất Thuật Toán")
+  st.markdown("### Bản Chất Thuật Toán")
 
   if "Bilateral" in filter_choice:
     st.markdown(
@@ -593,7 +593,7 @@ filtered = cv2.blur(noisy_img, (5, 5))</div>
 
 # 9. Bảng Đánh Giá Định Lượng
 st.markdown("---")
-st.markdown("### 📊 Bảng Đánh Giá Định Lượng & Hiệu Năng Bộ Lọc Hiện Tại")
+st.markdown("### Bảng Đánh Giá Định Lượng & Hiệu Năng Bộ Lọc Hiện Tại")
 
 c_tab, c_met = st.columns([1.2, 0.8])
 
@@ -627,9 +627,9 @@ with c_met:
   if exec_time_ms < 2.0:
     st.success("⚡ Tốc độ cực nhanh (Tích chập tuyến tính hoặc mảng phân tách)")
   elif exec_time_ms < 10.0:
-    st.info("✅ Đạt chuẩn xử lý thời gian thực (< 10 ms trên ảnh chuẩn)")
+    st.info("Đạt chuẩn xử lý thời gian thực (< 10 ms trên ảnh chuẩn)")
   else:
-    st.warning("⚠️ Đòi hỏi chi phí tính toán cao trên không gian phi tuyến")
+    st.warning("Đòi hỏi chi phí tính toán cao trên không gian phi tuyến")
 
 # 10. CASE STUDY TOÀN DIỆN 4 BỘ LỌC
 st.markdown("---")
