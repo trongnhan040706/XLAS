@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom CSS phong cách học thuật HUIT Dark Mode
+
 st.markdown(
     """
 <style>
@@ -172,9 +172,7 @@ st.markdown(
 st.markdown(
     """
 <div class="huit-header">
-    <div style="width: 52px; height: 52px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #0b2743; font-size: 18px; border: 2px solid #5ce4f4;">
-        HUIT
-    </div>
+    <img src="logo_huit.png" alt="Logo HUIT" style="width: 55px; height: 55px; object-fit: contain; border-radius: 50%; background: #ffffff; padding: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
     <div class="huit-title-box">
         <div class="huit-school">TRƯỜNG ĐẠI HỌC CÔNG THƯƠNG TP.HCM</div>
         <div class="huit-dept">Khoa Công nghệ thông tin · Bộ môn Khoa học dữ liệu và AI</div>
@@ -189,8 +187,8 @@ st.markdown(
 st.markdown(
     """
 <div class="hero-box">
-    <div class="hero-badge">BÁO CÁO THỰC NGHIỆM ĐỒ ÁN MÔN HỌC · WEB TƯƠNG TÁC THỜI GIAN THỰC</div>
-    <div class="hero-h1">HỆ THỐNG KHẢO SÁT & ĐỐI CHỨNG 4 BỘ LỌC KHÔNG GIAN</div>
+    <div class="hero-badge">BÁO CÁO THỰC NGHIỆM ĐỒ ÁN MÔN HỌC</div>
+    <div class="hero-h1">HỆ THỐNG KHỬ NHIỄU ẢNH SỐ</div>
     <p class="hero-p">
         Hệ thống tích hợp đầy đủ cơ sở toán học, ma trận kernel tham chiếu, đồ thị mặt phẳng cắt lát phân tích mức xám 
        và bộ chỉ số định lượng tiêu chuẩn quốc tế (PSNR, SSIM, Processing Time) nhằm đánh giá 
