@@ -315,7 +315,7 @@ st.info(f"📌 **Trạng thái ảnh hiện tại:** {img_status}")
 
 
 # 5. Hàm Sinh Nhiễu Chuẩn Xác
-def add_gaussian_noise(image, var=0.01):
+def add_gaussian_noise(image, var=0.001):
   sigma = (var**0.5) * 255.0
   gauss = np.random.normal(0, sigma, image.shape)
   noisy = image.astype(np.float32) + gauss
