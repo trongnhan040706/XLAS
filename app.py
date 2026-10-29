@@ -96,7 +96,7 @@ with c_ref2:
     <div class="ref-card" style="border-color: #48d39c;">
         <b style="color: #48d39c;">2. Gaussian Filter (3×3)</b>
         <div class="ref-eq">G(x,y) ∝ exp(-(x²+y²)/(2σ²))</div>
-        <div class="ref-note"><b>Quy chuẩn nhóm (σ cố định)</b><br>3x3: σ=1.1 | 5x5: σ=1.4 | 7x7: σ=1.7. Làm mịn tự nhiên, triệt tiêu nhiễu Gauss tốt.</div>
+        <div class="ref-note"><b>Kernel h ≈ 1/16 × [[1,2,1],[2,4,2],[1,2,1]]</b><br>Trọng số giảm dần theo hàm Gauss từ tâm ra biên. Làm mịn tự nhiên, triệt tiêu nhiễu Gauss tốt.</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -188,7 +188,7 @@ k_mean = 5
 # Bảng ánh xạ giá trị sigma chuẩn theo tài liệu của nhóm
 sigma_mapping = {3: 1.1, 5: 1.4, 7: 1.7, 9: 2.0, 11: 2.3}
 
-# 7. Sidebar Lựa Chọn Bộ Lọc Khử Nhiễu (Dùng Sigma cố định theo kernel)
+# 7. Sidebar Lựa Chọn Bộ Lọc Khử Nhiễu
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 🛠️ 2. Lựa Chọn Thuật Toán Lọc")
 filter_choice = st.sidebar.selectbox("Bộ lọc đang khảo sát chi tiết:", [
@@ -219,10 +219,7 @@ elif "Median" in filter_choice:
 elif "Gaussian" in filter_choice:
     st.sidebar.markdown("**Tham số Gaussian Filter:**")
     k_gauss = st.sidebar.slider("Kích thước Kernel Gauss:", 3, 11, 5, step=2)
-    
-    # Lấy sigma chuẩn theo bảng nhóm (3x3->1.1, 5x5->1.4, 7x7->1.7)
     sigma_val = sigma_mapping.get(k_gauss, 1.4)
-    
     _ = cv2.GaussianBlur(noisy_img, (k_gauss, k_gauss), sigmaX=sigma_val, sigmaY=sigma_val, borderType=cv2.BORDER_REFLECT)
     start_t = time.perf_counter()
     filtered_img = cv2.GaussianBlur(noisy_img, (k_gauss, k_gauss), sigmaX=sigma_val, sigmaY=sigma_val, borderType=cv2.BORDER_REFLECT)
@@ -273,9 +270,9 @@ with col_visual:
     ax.set_ylabel("Giá trị mức xám (0 - 255)", color="#cbd8e1", fontsize=10)
     ax.tick_params(colors="#8ba2b5", labelsize=9)
     ax.grid(True, color="#1e3d59", linestyle=":", alpha=0.7)
-    legend = ax.legend(loc="upper right", facecolor="#0b2743", edgecolor="#2c5f81", fontsize=9)
-    for text in legend.get_texts():
-        text.set_color("#ffffff")
+    
+    # ĐÃ XÓA HOÀN TOÀN Ô CHÚ THÍCH (ax.legend) Ở ĐÂY
+    
     st.pyplot(fig)
     plt.close(fig)
 
@@ -324,7 +321,7 @@ with c_tab:
     eval_df = pd.DataFrame({
         "Trạng thái thực nghiệm": ["Ảnh Nhiễm Nhiễu Đầu Vào", f"Sau Khi Khử Nhiễu ({filter_choice.split(' ')[0]})"],
         "PSNR (dB) — [Càng cao càng tốt]": [f"{psnr_raw:.2f} dB", f"{psnr_filtered:.2f} dB"],
-        "SSIM — [Càng gần 1 càng tốt]": [f"{ssim_raw:.4f}", f"{ssim_filtered:.4f}"],
+        "SSIM — [Càng gần 1 càng tốt]": [f"{ssim_raw:.4f}" , f"{ssim_filtered:.4f}"],
         "Mức chênh lệch cải thiện": ["-", f"Δ PSNR: {psnr_filtered - psnr_raw:+.2f} dB | Δ SSIM: {ssim_filtered - ssim_raw:+.4f}"]
     })
     st.table(eval_df)
