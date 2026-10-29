@@ -50,7 +50,6 @@ st.markdown("""
     .theory-box b { color: #25cbe6; font-size: 14px; display: block; margin-bottom: 4px; }
     .theory-box p { margin: 0; font-size: 13px; color: #d1dde6; line-height: 1.5; }
     .code-chip { font-family: 'Fira Code', monospace; font-size: 12px; background: #04101d; color: #5ce4f4; border: 1px solid #1c4361; border-radius: 8px; padding: 10px 14px; margin-top: 10px; }
-    .conclusion-tag { background: rgba(37, 203, 230, 0.12); border: 1px solid rgba(37, 203, 230, 0.4); border-radius: 8px; padding: 10px 14px; font-size: 13px; font-weight: 700; color: #e2f4f8; margin-top: 10px; line-height: 1.5; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -97,7 +96,7 @@ with c_ref2:
     <div class="ref-card" style="border-color: #48d39c;">
         <b style="color: #48d39c;">2. Gaussian Filter (3×3)</b>
         <div class="ref-eq">G(x,y) ∝ exp(-(x²+y²)/(2σ²))</div>
-        <div class="ref-note"><b>Kernel h ≈ 1/16 × [[1,2,1],[2,4,2],[1,2,1]]</b><br>Trọng số giảm dần theo hàm Gauss từ tâm ra biên. Làm mịn tự nhiên, triệt tiêu nhiễu Gauss tốt.</div>
+        <div class="ref-note"><b>sigmaX=0 (σ tự động)</b><br>Trọng số giảm dần theo hàm Gauss từ tâm ra biên. Làm mịn tự nhiên, triệt tiêu nhiễu Gauss tốt.</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -152,7 +151,7 @@ else:
 
 st.info(f"📌 **Trạng thái ảnh hiện tại:** {img_status}")
 
-# 5. Hàm Sinh Nhiễu Chuẩn Xác (Cố định seed=42 để không bị nhảy số PSNR/SSIM)
+# 5. Hàm Sinh Nhiễu Chuẩn Xác 
 def add_gaussian_noise(image, var=0.01):
     rng = np.random.default_rng(42)
     sigma = (var ** 0.5) * 255.0
@@ -220,14 +219,15 @@ elif "Gaussian" in filter_choice:
     st.sidebar.markdown("**Tham số Gaussian Filter:**")
     k_gauss = st.sidebar.slider("Kích thước Kernel Gauss:", 3, 11, 5, step=2)
     
-    sigma_fixed = 0.3 * ((k_gauss - 1) * 0.5 - 1) + 0.8
-    
-    _ = cv2.GaussianBlur(noisy_img, (k_gauss, k_gauss), sigmaX=sigma_fixed, sigmaY=sigma_fixed, borderType=cv2.BORDER_REFLECT)
+    #sigmaX=0 ĐỂ OPENCV TỰ TÍNH TOÁN THEO KÍCH THƯỚC KERNEL
+    _ = cv2.GaussianBlur(noisy_img, (k_gauss, k_gauss), sigmaX=0, borderType=cv2.BORDER_REFLECT)
     start_t = time.perf_counter()
-    filtered_img = cv2.GaussianBlur(noisy_img, (k_gauss, k_gauss), sigmaX=sigma_fixed, sigmaY=sigma_fixed, borderType=cv2.BORDER_REFLECT)
+    filtered_img = cv2.GaussianBlur(noisy_img, (k_gauss, k_gauss), sigmaX=0, borderType=cv2.BORDER_REFLECT)
     exec_time_ms = (time.perf_counter() - start_t) * 1000
     
-    st.sidebar.caption(f"🔍 Tự động gán: Kernel {k_gauss}×{k_gauss} → σ = {sigma_fixed:.2f}")
+    # Tính sigma hiển thị chú thích tham khảo
+    sigma_auto = 0.3 * ((k_gauss - 1) * 0.5 - 1) + 0.8
+    st.sidebar.caption(f"🔍 OpenCV tự động gán: Kernel {k_gauss}×{k_gauss} → σ ≈ {sigma_auto:.1f}")
 
 elif "Mean" in filter_choice:
     st.sidebar.markdown("**Tham số Mean Filter:**")
@@ -299,12 +299,13 @@ with col_theory:
         <div class="code-chip">filtered = cv2.medianBlur(noisy_img, ksize=5)</div>
         """, unsafe_allow_html=True)
     elif "Gaussian" in filter_choice:
+        sigma_auto_box = 0.3 * ((k_gauss - 1) * 0.5 - 1) + 0.8
         st.markdown(f"""
         <div class="theory-box">
-            <b>Lọc Gauss tự động theo Kernel</b>
-            <p>Trọng số giảm dần theo hàm chuông. Với Kernel {k_gauss}×{k_gauss}, hệ thống tự gán σ = {sigma_fixed:.2f}.</p>
+            <b>Lọc Gauss tự động chuẩn OpenCV (sigmaX=0)</b>
+            <p>Tự động tính σ dựa theo kích thước Kernel. Với Kernel {k_gauss}×{k_gauss}, hệ thống tự gán σ ≈ {sigma_auto_box:.1f}.</p>
         </div>
-        <div class="code-chip">filtered = cv2.GaussianBlur(noisy_img, ({k_gauss},{k_gauss}), sigmaX={sigma_fixed:.2f})</div>
+        <div class="code-chip">filtered = cv2.GaussianBlur(noisy_img, ({k_gauss},{k_gauss}), sigmaX=0)</div>
         """, unsafe_allow_html=True)
     elif "Mean" in filter_choice:
         st.markdown("""
@@ -336,20 +337,17 @@ with c_met:
     else:
         st.info("Đạt chuẩn xử lý thời gian thực")
 
-# 10. CASE STUDY TOÀN DIỆN 4 BỘ LỌC (ĐỒNG BỘ HOÀN TOÀN VỚI KERNEL Ở SIDEBAR)
+# 10. CASE STUDY TOÀN DIỆN 4 BỘ LỌC 
 st.markdown("---")
 st.markdown("### 🔬 Case Study Đề Tài: So Sánh Đối Chứng Toàn Diện 4 Bộ Lọc Không Gian")
-st.caption("Thực nghiệm chạy song song đồng thời 4 bộ lọc (với Gaussian tự động lấy đúng σ theo kích thước Kernel bạn đang chọn):")
-
-# Tự động tính sigma cho case study theo k_gauss đang chọn ở sidebar
-sigma_case = 0.3 * ((k_gauss - 1) * 0.5 - 1) + 0.8
+st.caption("Thực nghiệm chạy song song đồng thời 4 bộ lọc (với Gaussian tự động lấy σ chuẩn theo kích thước Kernel bạn đang chọn ở sidebar):")
 
 t_m0 = time.perf_counter()
 res_mean = cv2.blur(noisy_img, (k_mean, k_mean))
 t_m = (time.perf_counter() - t_m0) * 1000
 
 t_g0 = time.perf_counter()
-res_gauss = cv2.GaussianBlur(noisy_img, (k_gauss, k_gauss), sigmaX=sigma_case, sigmaY=sigma_case, borderType=cv2.BORDER_REFLECT)
+res_gauss = cv2.GaussianBlur(noisy_img, (k_gauss, k_gauss), sigmaX=0, borderType=cv2.BORDER_REFLECT)
 t_g = (time.perf_counter() - t_g0) * 1000
 
 t_med0 = time.perf_counter()
@@ -369,7 +367,7 @@ comp_results = [
         "Nhận xét kỹ thuật": "Làm mịn nhanh nhưng nhòe mờ biên cạnh nghiêm trọng."
     },
     {
-        "Bộ lọc": f"Gaussian Filter ({k_gauss}×{k_gauss}, σ={sigma_case:.1f})",
+        "Bộ lọc": f"Gaussian Filter ({k_gauss}×{k_gauss}, σ tự động)",
         "PSNR (dB)": psnr(clean_img, res_gauss, data_range=255),
         "SSIM": ssim(clean_img, res_gauss, data_range=255),
         "Thời gian (ms)": t_g,
