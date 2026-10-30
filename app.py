@@ -10,17 +10,89 @@ st.set_page_config(
     page_title="HUIT · Hệ Thống Khử Nhiễu & Lọc Không Gian Số",
     page_icon="🔬",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
+# CSS đồng bộ giao diện tối & Fix lỗi chìm chữ khi trình duyệt ở chế độ Light Mode mặc định
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Fira+Code:wght@400;600&display=swap');
+    
+    /* Ẩn hoàn toàn Sidebar để thao tác trên 1 trang duy nhất */
+    [data-testid="stSidebar"], [data-testid="collapsedControl"] {
+        display: none !important;
+    }
+
     .stApp {
-        background: radial-gradient(circle at 15% 0%, #103656 0%, #061426 45%, #04101d 100%);
-        color: #f8fafc;
+        background: radial-gradient(circle at 15% 0%, #103656 0%, #061426 45%, #04101d 100%) !important;
+        color: #f8fafc !important;
         font-family: 'Inter', sans-serif;
     }
+
+    /* Ép màu chữ sáng cho toàn bộ Tiêu đề, Nhãn (Label), Chú thích ảnh (Caption) bất kể Light/Dark mode */
+    h1, h2, h3, h4, h5, h6, p, span, label, 
+    .stMarkdown, [data-testid="stWidgetLabel"] p, 
+    [data-testid="stCaptionContainer"] p,
+    [data-testid="stImageCaption"] {
+        color: #f8fafc !important;
+    }
+
+    /* Tùy chỉnh khung Upload ảnh rõ nét trên nền tối */
+    [data-testid="stFileUploader"] section {
+        background-color: #081d33 !important;
+        border: 1px dashed #25cbe6 !important;
+        border-radius: 12px !important;
+        color: #f8fafc !important;
+    }
+    [data-testid="stFileUploader"] section small,
+    [data-testid="stFileUploader"] section span {
+        color: #cbd8e2 !important;
+    }
+    [data-testid="stFileUploader"] button {
+        background-color: #103656 !important;
+        color: #ffffff !important;
+        border: 1px solid #25cbe6 !important;
+    }
+
+    /* Tùy chỉnh Selectbox không bị chìm chữ ở Light Mode */
+    div[data-baseweb="select"] > div {
+        background-color: #081d33 !important;
+        color: #f8fafc !important;
+        border-color: #2a5877 !important;
+    }
+    div[data-baseweb="select"] span {
+        color: #f8fafc !important;
+    }
+
+    /* Khắc phục triệt để lỗi chìm chữ trong bảng (Table) ở Light Mode */
+    .custom-dark-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #081d33;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #2a5877;
+        margin-bottom: 16px;
+    }
+    .custom-dark-table th {
+        background: #0d2b49 !important;
+        color: #5ce4f4 !important;
+        font-weight: 700 !important;
+        text-align: left;
+        padding: 12px 16px;
+        border-bottom: 1px solid #2a5877 !important;
+        font-size: 14px;
+    }
+    .custom-dark-table td {
+        color: #f8fafc !important;
+        padding: 12px 16px;
+        border-bottom: 1px solid #163654 !important;
+        font-size: 14px;
+    }
+    .custom-dark-table tr:last-child td {
+        border-bottom: none !important;
+    }
+
     .huit-header {
         background: linear-gradient(135deg, #09233b 0%, #061626 100%);
         border-bottom: 3px solid #1cc9df;
@@ -46,10 +118,17 @@ st.markdown("""
     .ref-card { background: #081d33; border: 1px solid #2a5877; border-radius: 14px; padding: 14px 16px; height: 100%; box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
     .ref-eq { font-family: 'Fira Code', monospace; font-size: 12px; background: #051424; border-radius: 6px; padding: 6px 8px; margin-bottom: 8px; color: #5ce4f4; border: 1px solid #1c3d59; }
     .ref-note { font-size: 12px; color: #a2b7c7; line-height: 1.45; }
-    .theory-box { border-left: 4px solid #25cbe6; background: #081d33; border-radius: 0 10px 10px 0; padding: 12px 16px; margin-bottom: 12px; }
+    .control-panel {
+        background: #081d33;
+        border: 1px solid #2a5877;
+        border-radius: 14px;
+        padding: 18px 20px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    }
+    .theory-box { border-left: 4px solid #25cbe6; background: #051424; border-radius: 0 10px 10px 0; padding: 12px 16px; margin-top: 12px; margin-bottom: 10px; }
     .theory-box b { color: #25cbe6; font-size: 14px; display: block; margin-bottom: 4px; }
-    .theory-box p { margin: 0; font-size: 13px; color: #d1dde6; line-height: 1.5; }
-    .code-chip { font-family: 'Fira Code', monospace; font-size: 12px; background: #04101d; color: #5ce4f4; border: 1px solid #1c4361; border-radius: 8px; padding: 10px 14px; margin-top: 10px; }
+    .theory-box p { margin: 0; font-size: 13px; color: #d1dde6 !important; line-height: 1.5; }
+    .code-chip { font-family: 'Fira Code', monospace; font-size: 12px; background: #04101d; color: #5ce4f4 !important; border: 1px solid #1c4361; border-radius: 8px; padding: 10px 14px; margin-top: 8px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -71,7 +150,7 @@ st.markdown("""
     <div class="hero-badge">BÁO CÁO THỰC NGHIỆM ĐỒ ÁN MÔN HỌC</div>
     <div class="hero-h1">HỆ THỐNG KHỬ NHIỄU ẢNH SỐ</div>
     <p class="hero-p">
-        Hệ thống tích hợp đầy đủ cơ sở toán học, ma trận kernel tham chiếu, đồ thị mặt phẳng cắt lát phân tích mức xám 
+        Hệ thống tích hợp đầy đủ cơ sở toán học, ma trận kernel tham chiếu 
         và bộ chỉ số định lượng tiêu chuẩn quốc tế (PSNR, SSIM, Processing Time) nhằm đánh giá 
         chính xác tương quan giữa <b>Mean, Gaussian, Median và Bilateral Filter</b> trên các mô hình nhiễu thực tế.
     </p>
@@ -120,10 +199,7 @@ with c_ref4:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 4. Khu Vực Tải Ảnh & Chọn Ảnh Mẫu Mặc Định
-st.sidebar.markdown("### 📁 Nguồn Dữ Liệu Ảnh")
-uploaded_file = st.sidebar.file_uploader("Tải lên ảnh tùy chọn (Ground Truth):", type=["jpg", "png", "jpeg", "bmp"])
-
+# 4. Hàm Tạo Ảnh Mẫu & Sinh Nhiễu Chuẩn Xác
 def generate_default_sample():
     img = np.zeros((300, 420), dtype=np.uint8)
     for y in range(300):
@@ -135,23 +211,6 @@ def generate_default_sample():
     cv2.putText(img, "HUIT DATA SCIENCE", (75, 148), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255), 2, cv2.LINE_AA)
     return img
 
-if uploaded_file is not None:
-    file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-    clean_img = cv2.imdecode(file_bytes, cv2.IMREAD_GRAYSCALE)
-    if clean_img is None:
-        st.error("Lỗi đọc file ảnh! Vui lòng chọn ảnh định dạng hợp lệ.")
-        clean_img = generate_default_sample()
-    else:
-        if clean_img.shape[0] > 600 or clean_img.shape[1] > 600:
-            clean_img = cv2.resize(clean_img, (420, 300), interpolation=cv2.INTER_AREA)
-    img_status = f"Đang dùng ảnh tải lên: {uploaded_file.name}"
-else:
-    clean_img = generate_default_sample()
-    img_status = "Đang dùng: Ảnh mẫu mô phỏng đồ họa chuẩn HUIT (Geometric & Text Edges)"
-
-st.info(f"📌 **Trạng thái ảnh hiện tại:** {img_status}")
-
-# 5. Hàm Sinh Nhiễu Chuẩn Xác (Cố định seed=42 để không bị nhảy số PSNR/SSIM)
 def add_gaussian_noise(image, var=0.01):
     rng = np.random.default_rng(42)
     sigma = (var ** 0.5) * 255.0
@@ -167,81 +226,120 @@ def add_salt_and_pepper_noise(image, prob=0.05):
     output[rdn > (1.0 - prob / 2.0)] = 255
     return output
 
-# 6. Sidebar Cấu Hình Mô Phỏng Nhiễu
-st.sidebar.markdown("---")
-st.sidebar.markdown("### ⚡ 1. Cấu Hình Mô Phỏng Nhiễu")
-noise_type = st.sidebar.selectbox("Chọn mô hình nhiễu:", ["Gaussian Noise (Nhiễu Gauss)", "Salt & Pepper Noise (Nhiễu Muối Tiêu)"])
-
-if "Gaussian" in noise_type:
-    var_val = st.sidebar.slider("Phương sai nhiễu (Variance - var):", min_value=0.001, max_value=0.050, value=0.010, step=0.001, format="%.3f")
-    noisy_img = add_gaussian_noise(clean_img, var=var_val)
-else:
-    prob_val = st.sidebar.slider("Tỷ lệ hạt nhiễu (Probability):", min_value=0.01, max_value=0.20, value=0.06, step=0.01, format="%.2f")
-    noisy_img = add_salt_and_pepper_noise(clean_img, prob=prob_val)
-
-# Khởi tạo giá trị mặc định tránh lỗi
+# Khởi tạo các giá trị mặc định cho bộ lọc và bảng ánh xạ sigma
 d_val, sc_val, ss_val = 9, 75, 75
 k_med = 5
 k_gauss = 5
 k_mean = 5
-
-# Bảng ánh xạ giá trị sigma chuẩn theo tài liệu của nhóm
 sigma_mapping = {3: 1.1, 5: 1.4, 7: 1.7, 9: 2.0, 11: 2.3}
 
-# 7. Sidebar Lựa Chọn Bộ Lọc Khử Nhiễu
-st.sidebar.markdown("---")
-st.sidebar.markdown("### 🛠️ 2. Lựa Chọn Thuật Toán Lọc")
-filter_choice = st.sidebar.selectbox("Bộ lọc đang khảo sát chi tiết:", [
-    "Bilateral Filter (Lọc Song Phương)",
-    "Median Filter (Lọc Trung Vị)",
-    "Gaussian Filter (Lọc Gauss)",
-    "Mean Filter (Lọc Trung Bình)"
-])
+# 5. Bố Cục Chính: Cột Trái (Upload + So Sánh Ảnh) & Cột Phải (Cấu Hình Nhiễu + Bộ Lọc + Bản Chất Thuật Toán)
+col_visual, col_control = st.columns([1.3, 0.7], gap="large")
 
-if "Bilateral" in filter_choice:
-    st.sidebar.markdown("**Tham số Bilateral Filter:**")
-    d_val = st.sidebar.slider("Đường kính lân cận (d):", 3, 15, 9, step=2)
-    sc_val = st.sidebar.slider("Sigma Color (σ_range):", 10, 150, 75, step=5)
-    ss_val = st.sidebar.slider("Sigma Space (σ_spatial):", 10, 150, 75, step=5)
-    _ = cv2.bilateralFilter(noisy_img, d=d_val, sigmaColor=sc_val, sigmaSpace=ss_val)
-    start_t = time.perf_counter()
-    filtered_img = cv2.bilateralFilter(noisy_img, d=d_val, sigmaColor=sc_val, sigmaSpace=ss_val)
-    exec_time_ms = (time.perf_counter() - start_t) * 1000
+with col_visual:
+    st.markdown("### 📁 Nguồn Dữ Liệu Ảnh Đầu Vào")
+    uploaded_file = st.file_uploader("Tải lên ảnh tùy chọn (Ground Truth):", type=["jpg", "png", "jpeg", "bmp"])
+    
+    if uploaded_file is not None:
+        file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+        clean_img = cv2.imdecode(file_bytes, cv2.IMREAD_GRAYSCALE)
+        if clean_img is None:
+            st.error("Lỗi đọc file ảnh! Vui lòng chọn ảnh định dạng hợp lệ.")
+            clean_img = generate_default_sample()
+        else:
+            if clean_img.shape[0] > 600 or clean_img.shape[1] > 600:
+                clean_img = cv2.resize(clean_img, (420, 300), interpolation=cv2.INTER_AREA)
+        img_status = f"Đang dùng ảnh tải lên: {uploaded_file.name}"
+    else:
+        clean_img = generate_default_sample()
+        img_status = "Đang dùng: Ảnh mẫu mô phỏng đồ họa chuẩn HUIT (Geometric & Text Edges)"
+    
+    st.info(f"📌 **Trạng thái ảnh hiện tại:** {img_status}")
 
-elif "Median" in filter_choice:
-    st.sidebar.markdown("**Tham số Median Filter:**")
-    k_med = st.sidebar.slider("Kích thước Kernel Median:", 3, 11, 5, step=2)
-    _ = cv2.medianBlur(noisy_img, k_med)
-    start_t = time.perf_counter()
-    filtered_img = cv2.medianBlur(noisy_img, k_med)
-    exec_time_ms = (time.perf_counter() - start_t) * 1000
+with col_control:
+    st.markdown("### ⚡ 1. Cấu Hình Mô Phỏng Nhiễu")
+    noise_type = st.selectbox("Chọn mô hình nhiễu:", ["Gaussian Noise (Nhiễu Gauss)", "Salt & Pepper Noise (Nhiễu Muối Tiêu)"])
 
-elif "Gaussian" in filter_choice:
-    st.sidebar.markdown("**Tham số Gaussian Filter:**")
-    k_gauss = st.sidebar.slider("Kích thước Kernel Gauss:", 3, 11, 5, step=2)
-    sigma_val = sigma_mapping.get(k_gauss, 1.4)
-    _ = cv2.GaussianBlur(noisy_img, (k_gauss, k_gauss), sigmaX=sigma_val, sigmaY=sigma_val, borderType=cv2.BORDER_REFLECT)
-    start_t = time.perf_counter()
-    filtered_img = cv2.GaussianBlur(noisy_img, (k_gauss, k_gauss), sigmaX=sigma_val, sigmaY=sigma_val, borderType=cv2.BORDER_REFLECT)
-    exec_time_ms = (time.perf_counter() - start_t) * 1000
+    if "Gaussian" in noise_type:
+        var_val = st.slider("Phương sai nhiễu (Variance - var):", min_value=0.001, max_value=0.050, value=0.010, step=0.001, format="%.3f")
+        noisy_img = add_gaussian_noise(clean_img, var=var_val)
+    else:
+        prob_val = st.slider("Tỷ lệ hạt nhiễu (Probability):", min_value=0.01, max_value=0.20, value=0.06, step=0.01, format="%.2f")
+        noisy_img = add_salt_and_pepper_noise(clean_img, prob=prob_val)
 
-elif "Mean" in filter_choice:
-    st.sidebar.markdown("**Tham số Mean Filter:**")
-    k_mean = st.sidebar.slider("Kích thước Kernel Mean (Box):", 3, 11, 5, step=2)
-    _ = cv2.blur(noisy_img, (k_mean, k_mean))
-    start_t = time.perf_counter()
-    filtered_img = cv2.blur(noisy_img, (k_mean, k_mean))
-    exec_time_ms = (time.perf_counter() - start_t) * 1000
+    st.markdown("---")
+    st.markdown("### 🛠️ 2. Lựa Chọn Thuật Toán Lọc")
+    filter_choice = st.selectbox("Bộ lọc đang khảo sát chi tiết:", [
+        "Bilateral Filter (Lọc Song Phương)",
+        "Median Filter (Lọc Trung Vị)",
+        "Gaussian Filter (Lọc Gauss)",
+        "Mean Filter (Lọc Trung Bình)"
+    ])
 
-# 8. Tính Định Lượng PSNR & SSIM
-psnr_raw = psnr(clean_img, noisy_img, data_range=255)
-ssim_raw = ssim(clean_img, noisy_img, data_range=255)
+    if "Bilateral" in filter_choice:
+        d_val = st.slider("Đường kính lân cận (d):", 3, 15, 9, step=2)
+        sc_val = st.slider("Sigma Color (σ_range):", 10, 150, 75, step=5)
+        ss_val = st.slider("Sigma Space (σ_spatial):", 10, 150, 75, step=5)
+        _ = cv2.bilateralFilter(noisy_img, d=d_val, sigmaColor=sc_val, sigmaSpace=ss_val)
+        start_t = time.perf_counter()
+        filtered_img = cv2.bilateralFilter(noisy_img, d=d_val, sigmaColor=sc_val, sigmaSpace=ss_val)
+        exec_time_ms = (time.perf_counter() - start_t) * 1000
 
-psnr_filtered = psnr(clean_img, filtered_img, data_range=255)
-ssim_filtered = ssim(clean_img, filtered_img, data_range=255)
+        st.markdown(f"""
+        <div class="theory-box">
+            <b>Bản chất thuật toán: Bảo toàn biên cạnh bằng 2 hàm Gauss</b>
+            <p>Trọng số kết hợp khoảng cách không gian (σ_s = {ss_val}) và độ tương đồng mức xám (σ_r = {sc_val}) trên vùng lân cận d = {d_val}.</p>
+        </div>
+        <div class="code-chip">filtered = cv2.bilateralFilter(noisy_img, d={d_val}, sigmaColor={sc_val}, sigmaSpace={ss_val})</div>
+        """, unsafe_allow_html=True)
 
-col_visual, col_theory = st.columns([1.3, 0.7])
+    elif "Median" in filter_choice:
+        k_med = st.slider("Kích thước Kernel Median:", 3, 11, 5, step=2)
+        _ = cv2.medianBlur(noisy_img, k_med)
+        start_t = time.perf_counter()
+        filtered_img = cv2.medianBlur(noisy_img, k_med)
+        exec_time_ms = (time.perf_counter() - start_t) * 1000
 
+        st.markdown(f"""
+        <div class="theory-box">
+            <b>Bản chất thuật toán: Cơ chế thống kê thứ tự phi tuyến</b>
+            <p>Sắp xếp các điểm ảnh trong cửa sổ {k_med}×{k_med} và chọn phần tử trung vị để triệt tiêu nhiễu xung cực trị.</p>
+        </div>
+        <div class="code-chip">filtered = cv2.medianBlur(noisy_img, ksize={k_med})</div>
+        """, unsafe_allow_html=True)
+
+    elif "Gaussian" in filter_choice:
+        k_gauss = st.slider("Kích thước Kernel Gauss:", 3, 11, 5, step=2)
+        sigma_val = sigma_mapping.get(k_gauss, 1.4)
+        _ = cv2.GaussianBlur(noisy_img, (k_gauss, k_gauss), sigmaX=sigma_val, sigmaY=sigma_val, borderType=cv2.BORDER_REFLECT)
+        start_t = time.perf_counter()
+        filtered_img = cv2.GaussianBlur(noisy_img, (k_gauss, k_gauss), sigmaX=sigma_val, sigmaY=sigma_val, borderType=cv2.BORDER_REFLECT)
+        exec_time_ms = (time.perf_counter() - start_t) * 1000
+
+        st.markdown(f"""
+        <div class="theory-box">
+            <b>Bản chất thuật toán: Lọc Gauss theo quy chuẩn đồ án</b>
+            <p>Kernel {k_gauss}×{k_gauss} tương ứng với độ lệch chuẩn cố định σ = {sigma_val}, làm mịn tự nhiên theo phân phối chuẩn.</p>
+        </div>
+        <div class="code-chip">filtered = cv2.GaussianBlur(noisy_img, ({k_gauss},{k_gauss}), sigmaX={sigma_val})</div>
+        """, unsafe_allow_html=True)
+
+    elif "Mean" in filter_choice:
+        k_mean = st.slider("Kích thước Kernel Mean (Box):", 3, 11, 5, step=2)
+        _ = cv2.blur(noisy_img, (k_mean, k_mean))
+        start_t = time.perf_counter()
+        filtered_img = cv2.blur(noisy_img, (k_mean, k_mean))
+        exec_time_ms = (time.perf_counter() - start_t) * 1000
+
+        st.markdown(f"""
+        <div class="theory-box">
+            <b>Bản chất thuật toán: Nguyên lý trung bình khối (Box Filter)</b>
+            <p>Chia đều trọng số 1/{k_mean*k_mean} cho mọi pixel trong cửa sổ {k_mean}×{k_mean}.</p>
+        </div>
+        <div class="code-chip">filtered = cv2.blur(noisy_img, ({k_mean}, {k_mean}))</div>
+        """, unsafe_allow_html=True)
+
+# Hiển thị 3 ảnh so sánh nằm ngay dưới phần Upload ảnh ở cột bên trái
 with col_visual:
     st.markdown("### 🖼️ Kết Quả So Sánh Hình Ảnh Song Song")
     c_img1, c_img2, c_img3 = st.columns(3)
@@ -252,91 +350,48 @@ with col_visual:
     with c_img3:
         st.image(filtered_img, caption=f"3. Sau Khi Lọc ({filter_choice.split(' ')[0]})", use_container_width=True)
 
-    st.markdown("#### 📈 Phân Tích Lát Cắt Mức Xám")
-    slice_y = int(clean_img.shape[0] * 0.5)
-    profile_clean = clean_img[slice_y, :]
-    profile_noisy = noisy_img[slice_y, :]
-    profile_filtered = filtered_img[slice_y, :]
+# 6. Tính Định Lượng PSNR & SSIM và Hiển Thị Bảng Đánh Giá
+psnr_raw = psnr(clean_img, noisy_img, data_range=255)
+ssim_raw = ssim(clean_img, noisy_img, data_range=255)
 
-    fig, ax = plt.subplots(figsize=(10, 3.2), facecolor="#07192d")
-    ax.set_facecolor("#07192d")
-    ax.plot(profile_noisy, label="Ảnh Nhiễu", color="#64748b", linewidth=1.0, alpha=0.65)
-    ax.plot(profile_clean, label="Ảnh Gốc (Chuẩn)", color="#ffffff", linewidth=1.6, linestyle="--")
-    ax.plot(profile_filtered, label=f"Sau {filter_choice.split(' ')[0]}", color="#25cbe6", linewidth=2.0)
+psnr_filtered = psnr(clean_img, filtered_img, data_range=255)
+ssim_filtered = ssim(clean_img, filtered_img, data_range=255)
 
-    ax.set_xlim(0, clean_img.shape[1] - 1)
-    ax.set_ylim(0, 260)
-    ax.set_xlabel("Tọa độ trục ngang X (pixels)", color="#cbd8e1", fontsize=10)
-    ax.set_ylabel("Giá trị mức xám (0 - 255)", color="#cbd8e1", fontsize=10)
-    ax.tick_params(colors="#8ba2b5", labelsize=9)
-    ax.grid(True, color="#1e3d59", linestyle=":", alpha=0.7)
-    
-    # ĐÃ XÓA HOÀN TOÀN Ô CHÚ THÍCH (ax.legend) Ở ĐÂY
-    
-    st.pyplot(fig)
-    plt.close(fig)
-
-with col_theory:
-    st.markdown("### Bản Chất Thuật Toán")
-    if "Bilateral" in filter_choice:
-        st.markdown("""
-        <div class="theory-box">
-            <b>Bảo toàn biên cạnh bằng 2 hàm Gauss</b>
-            <p>Trọng số kết hợp khoảng cách không gian và độ tương đồng mức xám.</p>
-        </div>
-        <div class="code-chip">filtered = cv2.bilateralFilter(noisy_img, d=9, sigmaColor=75, sigmaSpace=75)</div>
-        """, unsafe_allow_html=True)
-    elif "Median" in filter_choice:
-        st.markdown("""
-        <div class="theory-box">
-            <b>Cơ chế thống kê thứ tự phi tuyến</b>
-            <p>Sắp xếp lân cận, chọn phần tử trung vị để triệt tiêu nhiễu xung.</p>
-        </div>
-        <div class="code-chip">filtered = cv2.medianBlur(noisy_img, ksize=5)</div>
-        """, unsafe_allow_html=True)
-    elif "Gaussian" in filter_choice:
-        cur_sigma = sigma_mapping.get(k_gauss, 1.4)
-        st.markdown(f"""
-        <div class="theory-box">
-            <b>Lọc Gauss theo quy chuẩn đồ án</b>
-            <p>Kernel {k_gauss}×{k_gauss} tương ứng với độ lệch chuẩn cố định σ = {cur_sigma}.</p>
-        </div>
-        <div class="code-chip">filtered = cv2.GaussianBlur(noisy_img, ({k_gauss},{k_gauss}), sigmaX={cur_sigma})</div>
-        """, unsafe_allow_html=True)
-    elif "Mean" in filter_choice:
-        st.markdown("""
-        <div class="theory-box">
-            <b>Nguyên lý trung bình khối (Box Filter)</b>
-            <p>Chia đều trọng số cho mọi pixel trong cửa sổ.</p>
-        </div>
-        <div class="code-chip">filtered = cv2.blur(noisy_img, (5, 5))</div>
-        """, unsafe_allow_html=True)
-
-# 9. Bảng Đánh Giá Định Lượng
 st.markdown("---")
-st.markdown("### Bảng Đánh Giá Định Lượng & Hiệu Năng Bộ Lọc Hiện Tại")
-c_tab, c_met = st.columns([1.2, 0.8])
+st.markdown("### 📊 Bảng Đánh Giá Định Lượng & Hiệu Năng Bộ Lọc Hiện Tại")
 
-with c_tab:
-    eval_df = pd.DataFrame({
-        "Trạng thái thực nghiệm": ["Ảnh Nhiễm Nhiễu Đầu Vào", f"Sau Khi Khử Nhiễu ({filter_choice.split(' ')[0]})"],
-        "PSNR (dB) — [Càng cao càng tốt]": [f"{psnr_raw:.2f} dB", f"{psnr_filtered:.2f} dB"],
-        "SSIM — [Càng gần 1 càng tốt]": [f"{ssim_raw:.4f}" , f"{ssim_filtered:.4f}"],
-        "Mức chênh lệch cải thiện": ["-", f"Δ PSNR: {psnr_filtered - psnr_raw:+.2f} dB | Δ SSIM: {ssim_filtered - ssim_raw:+.4f}"]
-    })
-    st.table(eval_df)
+eval_html = f"""
+<table class="custom-dark-table">
+    <thead>
+        <tr>
+            <th>Trạng thái thực nghiệm</th>
+            <th>PSNR (dB) — [Càng cao càng tốt]</th>
+            <th>SSIM — [Càng gần 1 càng tốt]</th>
+            <th>Thời gian thực thi</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Ảnh Nhiễm Nhiễu Đầu Vào</td>
+            <td>{psnr_raw:.2f} dB</td>
+            <td>{ssim_raw:.4f}</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>Sau Khi Khử Nhiễu ({filter_choice.split(' ')[0]})</td>
+            <td>{psnr_filtered:.2f} dB</td>
+            <td>{ssim_filtered:.4f}</td>
+            <td>{exec_time_ms:.2f} ms</td>
+        </tr>
+    </tbody>
+</table>
+"""
+st.markdown(eval_html, unsafe_allow_html=True)
 
-with c_met:
-    st.metric(label="Thời Gian Thực Thi Thuật Toán (Latency)", value=f"{exec_time_ms:.2f} ms")
-    if exec_time_ms < 2.0:
-        st.success("⚡ Tốc độ cực nhanh (< 2 ms)")
-    else:
-        st.info("Đạt chuẩn xử lý thời gian thực")
-
-# 10. CASE STUDY TOÀN DIỆN 4 BỘ LỌC (SO SÁNH ĐỒNG BỘ 4 BỘ LỌC)
+# 7. CASE STUDY TOÀN DIỆN 4 BỘ LỌC (SO SÁNH ĐỒNG BỘ 4 BỘ LỌC)
 st.markdown("---")
 st.markdown("### 🔬 Case Study Đề Tài: So Sánh Đối Chứng Toàn Diện 4 Bộ Lọc Không Gian")
-st.caption("Thực nghiệm chạy song song đồng thời 4 bộ lọc (với Gaussian lấy đúng σ chuẩn theo kích thước Kernel bạn đang chọn ở sidebar):")
+st.caption("Thực nghiệm chạy song song đồng thời 4 bộ lọc trên cùng ảnh nhiễu hiện tại:")
 
 sigma_case = sigma_mapping.get(k_gauss, 1.4)
 
@@ -397,11 +452,36 @@ with c_show3:
 with c_show4:
     st.image(res_bilateral, caption=f"Bilateral (d={d_val})", use_container_width=True)
 
-comp_df = pd.DataFrame(comp_results)
-comp_df["PSNR (dB)"] = comp_df["PSNR (dB)"].map(lambda x: f"{x:.2f}")
-comp_df["SSIM"] = comp_df["SSIM"].map(lambda x: f"{x:.4f}")
-comp_df["Thời gian (ms)"] = comp_df["Thời gian (ms)"].map(lambda x: f"{x:.2f} ms")
-st.table(comp_df)
+# Render bảng so sánh 4 bộ lọc bằng HTML tùy chỉnh để đảm bảo chữ luôn sáng rõ trên mọi theme
+rows_html = ""
+for r in comp_results:
+    rows_html += f"""
+    <tr>
+        <td>{r['Bộ lọc']}</td>
+        <td>{r['PSNR (dB)']:.2f}</td>
+        <td>{r['SSIM']:.4f}</td>
+        <td>{r['Thời gian (ms)']:.2f} ms</td>
+        <td>{r['Nhận xét kỹ thuật']}</td>
+    </tr>
+    """
+
+comp_table_html = f"""
+<table class="custom-dark-table">
+    <thead>
+        <tr>
+            <th>Bộ lọc</th>
+            <th>PSNR (dB)</th>
+            <th>SSIM</th>
+            <th>Thời gian (ms)</th>
+            <th>Nhận xét kỹ thuật</th>
+        </tr>
+    </thead>
+    <tbody>
+        {rows_html}
+    </tbody>
+</table>
+"""
+st.markdown(comp_table_html, unsafe_allow_html=True)
 
 fig_bar, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 3.2), facecolor="#07192d")
 filter_names = ["Mean", "Gaussian", "Median", "Bilateral"]
