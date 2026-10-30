@@ -512,9 +512,9 @@ st.pyplot(fig_bar)
 plt.close(fig_bar)
 
 if "Gaussian" in noise_type:
-    st.success("🎯 **Kết luận tự động từ hệ thống:** Trên mô hình **Nhiễu Gauss**, **Bilateral Filter** và **Gaussian Filter** đạt hiệu quả cao nhất.")
+    st.success("🎯 **Kết luận :** Trên mô hình **Nhiễu Gauss**, **Bilateral Filter** và **Gaussian Filter** đạt hiệu quả cao nhất.")
 else:
-    st.success("🎯 **Kết luận tự động từ hệ thống:** Trên mô hình **Nhiễu Muối Tiêu (Salt & Pepper)**, **Median Filter** là bộ lọc tối ưu và vượt trội hoàn toàn.")
+    st.success("🎯 **Kết luận :** Trên mô hình **Nhiễu Muối Tiêu (Salt & Pepper)**, **Median Filter** là bộ lọc tối ưu và vượt trội hoàn toàn.")
 
 st.markdown("""
 <div style="margin-top: 45px; background: #07192c; border-top: 3px solid #1cc9df; padding: 16px; text-align: center; color: #b8cbd9; font-size: 13px; border-radius: 10px;">
