@@ -118,13 +118,6 @@ st.markdown("""
     .ref-card { background: #081d33; border: 1px solid #2a5877; border-radius: 14px; padding: 14px 16px; height: 100%; box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
     .ref-eq { font-family: 'Fira Code', monospace; font-size: 12px; background: #051424; border-radius: 6px; padding: 6px 8px; margin-bottom: 8px; color: #5ce4f4; border: 1px solid #1c3d59; }
     .ref-note { font-size: 12px; color: #a2b7c7; line-height: 1.45; }
-    .control-panel {
-        background: #081d33;
-        border: 1px solid #2a5877;
-        border-radius: 14px;
-        padding: 18px 20px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-    }
     .theory-box { border-left: 4px solid #25cbe6; background: #051424; border-radius: 0 10px 10px 0; padding: 12px 16px; margin-top: 12px; margin-bottom: 10px; }
     .theory-box b { color: #25cbe6; font-size: 14px; display: block; margin-bottom: 4px; }
     .theory-box p { margin: 0; font-size: 13px; color: #d1dde6 !important; line-height: 1.5; }
@@ -138,7 +131,7 @@ st.markdown("""
     <div style="width: 55px; height: 55px; border-radius: 50%; background: #1cc9df; color: #061426; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px;">HUIT</div>
     <div class="huit-title-box">
         <div class="huit-school">TRƯỜNG ĐẠI HỌC CÔNG THƯƠNG TP.HCM</div>
-        <div class="huit-dept">Khoa Công nghệ thông tin · Bộ môn Khoa học dữ liệu và AI</div>
+        <div class="huit-dept">Khoa Công nghệ thông tin </div>
         <div class="huit-course">XỬ LÝ ẢNH SỐ · ĐỒ ÁN MINH HỌA CÁC BỘ LỌC MIỀN KHÔNG GIAN</div>
     </div>
 </div>
@@ -262,10 +255,16 @@ with col_control:
 
     if "Gaussian" in noise_type:
         var_val = st.slider("Phương sai nhiễu (Variance - var):", min_value=0.001, max_value=0.050, value=0.010, step=0.001, format="%.3f")
+        _ = add_gaussian_noise(clean_img, var=var_val)
+        t_n0 = time.perf_counter()
         noisy_img = add_gaussian_noise(clean_img, var=var_val)
+        noise_time_ms = (time.perf_counter() - t_n0) * 1000
     else:
         prob_val = st.slider("Tỷ lệ hạt nhiễu (Probability):", min_value=0.01, max_value=0.20, value=0.06, step=0.01, format="%.2f")
+        _ = add_salt_and_pepper_noise(clean_img, prob=prob_val)
+        t_n0 = time.perf_counter()
         noisy_img = add_salt_and_pepper_noise(clean_img, prob=prob_val)
+        noise_time_ms = (time.perf_counter() - t_n0) * 1000
 
     st.markdown("---")
     st.markdown("### 🛠️ 2. Lựa Chọn Thuật Toán Lọc")
@@ -350,7 +349,7 @@ with col_visual:
     with c_img3:
         st.image(filtered_img, caption=f"3. Sau Khi Lọc ({filter_choice.split(' ')[0]})", use_container_width=True)
 
-# 6. Tính Định Lượng PSNR & SSIM và Hiển Thị Bảng Đánh Giá
+# 6. Tính Định Lượng PSNR & SSIM và Hiển Thị Bảng Đánh Giá (Đầy đủ 2 ô Thời gian thực thi)
 psnr_raw = psnr(clean_img, noisy_img, data_range=255)
 ssim_raw = ssim(clean_img, noisy_img, data_range=255)
 
@@ -375,7 +374,7 @@ eval_html = f"""
             <td>Ảnh Nhiễm Nhiễu Đầu Vào</td>
             <td>{psnr_raw:.2f} dB</td>
             <td>{ssim_raw:.4f}</td>
-            <td>-</td>
+            <td>{noise_time_ms:.2f} ms</td>
         </tr>
         <tr>
             <td>Sau Khi Khử Nhiễu ({filter_choice.split(' ')[0]})</td>
@@ -519,7 +518,7 @@ else:
 
 st.markdown("""
 <div style="margin-top: 45px; background: #07192c; border-top: 3px solid #1cc9df; padding: 16px; text-align: center; color: #b8cbd9; font-size: 13px; border-radius: 10px;">
-    <b>TRƯỜNG ĐẠI HỌC CÔNG THƯƠNG TP.HCM (HUIT)</b> · Khoa Công Nghệ Thông Tin · Bộ Môn Khoa Học Dữ Liệu & Trí Tuệ Nhân Tạo<br>
+    <b>TRƯỜNG ĐẠI HỌC CÔNG THƯƠNG TP.HCM (HUIT)</b> · Khoa Công Nghệ Thông Tin ·
     Đồ án môn học: Xử Lý Ảnh Số — Giảng viên hướng dẫn: TS. Nguyễn Huy Liêm
 </div>
 """, unsafe_allow_html=True)
