@@ -283,7 +283,7 @@ with col_visual:
         img_status = f"Đang dùng ảnh tải lên: {uploaded_file.name}"
     else:
         clean_img = generate_default_sample()
-        img_status = "Đang dùng: Ảnh mẫu mô phỏng đồ họa chuẩn HUIT (Geometric & Text Edges)"
+        img_status = "Đang dùng ảnh mẫu mô phỏng đồ họa chuẩn"
     
     st.info(f"📌 **Trạng thái ảnh hiện tại:** {img_status}")
 
