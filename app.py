@@ -1,3 +1,5 @@
+import base64
+import os
 import time
 import cv2
 import matplotlib.pyplot as plt
@@ -12,6 +14,23 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+
+# Hàm tự động đọc file logo_huit.png trong thư mục đồ án và chuyển sang Base64 để nhúng vào HTML
+def get_logo_html():
+    possible_files = ["logo_huit.png", "logo.png", "huit.png", "logo_huit.jpg", "logo.jpg"]
+    for filename in possible_files:
+        if os.path.exists(filename):
+            with open(filename, "rb") as f:
+                b64_data = base64.b64encode(f.read()).decode("utf-8")
+            mime = "image/png" if filename.endswith(".png") else "image/jpeg"
+            return f'<img src="data:{mime};base64,{b64_data}" class="huit-logo-img" alt="HUIT Logo">'
+    
+    # Nếu chưa có file ảnh trong thư mục, dùng link logo online kèm fallback chữ HUIT nếu mất mạng
+    return (
+        '<img src="https://huit.edu.vn/ Images/Sites/1/media/logo-huit-nen-trang.png" '
+        'onerror="this.outerHTML=\'<div class=\\\'huit-logo-fallback\\\'>HUIT</div>\'" '
+        'class="huit-logo-img" alt="HUIT Logo">'
+    )
 
 # CSS đồng bộ giao diện tối & Fix lỗi chìm chữ khi trình duyệt ở chế độ Light Mode mặc định
 st.markdown("""
@@ -104,6 +123,30 @@ st.markdown("""
         gap: 18px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.35);
     }
+    .huit-logo-img {
+        width: 62px;
+        height: 62px;
+        border-radius: 50%;
+        background: #ffffff;
+        padding: 4px;
+        object-fit: contain;
+        border: 2px solid #1cc9df;
+        box-shadow: 0 4px 12px rgba(28, 201, 223, 0.25);
+        flex-shrink: 0;
+    }
+    .huit-logo-fallback {
+        width: 62px;
+        height: 62px;
+        border-radius: 50%;
+        background: #1cc9df;
+        color: #061426 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
     .huit-title-box { flex-grow: 1; }
     .huit-school { font-size: 19px; font-weight: 900; color: #f8fafc; margin-bottom: 3px; }
     .huit-dept { font-size: 13px; color: #b8cbd9; margin-bottom: 3px; }
@@ -125,10 +168,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 1. Header Banner HUIT
-st.markdown("""
+# 1. Header Banner HUIT (Đã thay vòng tròn chữ HUIT bằng Logo Trường)
+logo_element = get_logo_html()
+st.markdown(f"""
 <div class="huit-header">
-    <div style="width: 55px; height: 55px; border-radius: 50%; background: #1cc9df; color: #061426; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px;">HUIT</div>
+    {logo_element}
     <div class="huit-title-box">
         <div class="huit-school">TRƯỜNG ĐẠI HỌC CÔNG THƯƠNG TP.HCM</div>
         <div class="huit-dept">Khoa Công nghệ thông tin </div>
@@ -512,9 +556,9 @@ st.pyplot(fig_bar)
 plt.close(fig_bar)
 
 if "Gaussian" in noise_type:
-    st.success("🎯 **Kết luận :** Trên mô hình **Nhiễu Gauss**, **Bilateral Filter** và **Gaussian Filter** đạt hiệu quả cao nhất.")
+    st.success("🎯 **Kết luận:** Trên mô hình **Nhiễu Gauss**, **Bilateral Filter** và **Gaussian Filter** đạt hiệu quả cao nhất.")
 else:
-    st.success("🎯 **Kết luận :** Trên mô hình **Nhiễu Muối Tiêu (Salt & Pepper)**, **Median Filter** là bộ lọc tối ưu và vượt trội hoàn toàn.")
+    st.success("🎯 **Kết luận:** Trên mô hình **Nhiễu Muối Tiêu (Salt & Pepper)**, **Median Filter** là bộ lọc tối ưu và vượt trội hoàn toàn.")
 
 st.markdown("""
 <div style="margin-top: 45px; background: #07192c; border-top: 3px solid #1cc9df; padding: 16px; text-align: center; color: #b8cbd9; font-size: 13px; border-radius: 10px;">
