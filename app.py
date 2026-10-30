@@ -25,19 +25,13 @@ def get_logo_html():
             mime = "image/png" if filename.endswith(".png") else "image/jpeg"
             return f'<img src="data:{mime};base64,{b64_data}" class="huit-logo-img" alt="HUIT Logo">'
     
-    # Nếu chưa có file ảnh trong thư mục, dùng link logo online kèm fallback chữ HUIT nếu mất mạng
-    return (
-        '<img src="https://huit.edu.vn/ Images/Sites/1/media/logo-huit-nen-trang.png" '
-        'onerror="this.outerHTML=\'<div class=\\\'huit-logo-fallback\\\'>HUIT</div>\'" '
-        'class="huit-logo-img" alt="HUIT Logo">'
-    )
+    # Nếu chưa có file ảnh trong thư mục, hiển thị vòng tròn HUIT dự phòng
+    return '<div class="huit-logo-fallback">HUIT</div>'
 
 # CSS đồng bộ giao diện tối & Fix lỗi chìm chữ khi trình duyệt ở chế độ Light Mode mặc định
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Fira+Code:wght@400;600&display=swap');
-    
-    /* Ẩn hoàn toàn Sidebar để thao tác trên 1 trang duy nhất */
     [data-testid="stSidebar"], [data-testid="collapsedControl"] {
         display: none !important;
     }
@@ -168,14 +162,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 1. Header Banner HUIT (Đã thay vòng tròn chữ HUIT bằng Logo Trường)
+# 1. Header Banner HUIT 
 logo_element = get_logo_html()
 st.markdown(f"""
 <div class="huit-header">
     {logo_element}
     <div class="huit-title-box">
         <div class="huit-school">TRƯỜNG ĐẠI HỌC CÔNG THƯƠNG TP.HCM</div>
-        <div class="huit-dept">Khoa Công nghệ thông tin </div>
+        <div class="huit-dept">Khoa Công nghệ thông tin · </div>
         <div class="huit-course">XỬ LÝ ẢNH SỐ · ĐỒ ÁN MINH HỌA CÁC BỘ LỌC MIỀN KHÔNG GIAN</div>
     </div>
 </div>
@@ -294,29 +288,29 @@ with col_visual:
     st.info(f"📌 **Trạng thái ảnh hiện tại:** {img_status}")
 
 with col_control:
-    st.markdown("### ⚡ 1. Cấu Hình Mô Phỏng Nhiễu")
-    noise_type = st.selectbox("Chọn mô hình nhiễu:", ["Gaussian Noise (Nhiễu Gauss)", "Salt & Pepper Noise (Nhiễu Muối Tiêu)"])
+    st.markdown("###  1. Cấu Hình Mô Phỏng Nhiễu")
+    noise_type = st.selectbox("Chọn mô hình nhiễu:", ["Gaussian Noise", "Salt & Pepper Noise"])
 
     if "Gaussian" in noise_type:
-        var_val = st.slider("Phương sai nhiễu (Variance - var):", min_value=0.001, max_value=0.050, value=0.010, step=0.001, format="%.3f")
+        var_val = st.slider("Phương sai nhiễu var:", min_value=0.001, max_value=0.050, value=0.010, step=0.001, format="%.3f")
         _ = add_gaussian_noise(clean_img, var=var_val)
         t_n0 = time.perf_counter()
         noisy_img = add_gaussian_noise(clean_img, var=var_val)
         noise_time_ms = (time.perf_counter() - t_n0) * 1000
     else:
-        prob_val = st.slider("Tỷ lệ hạt nhiễu (Probability):", min_value=0.01, max_value=0.20, value=0.06, step=0.01, format="%.2f")
+        prob_val = st.slider("Tỷ lệ hạt nhiễu Probability:", min_value=0.01, max_value=0.20, value=0.06, step=0.01, format="%.2f")
         _ = add_salt_and_pepper_noise(clean_img, prob=prob_val)
         t_n0 = time.perf_counter()
         noisy_img = add_salt_and_pepper_noise(clean_img, prob=prob_val)
         noise_time_ms = (time.perf_counter() - t_n0) * 1000
 
     st.markdown("---")
-    st.markdown("### 🛠️ 2. Lựa Chọn Thuật Toán Lọc")
+    st.markdown("###  2. Lựa Chọn Thuật Bộ Lọc")
     filter_choice = st.selectbox("Bộ lọc đang khảo sát chi tiết:", [
-        "Bilateral Filter (Lọc Song Phương)",
-        "Median Filter (Lọc Trung Vị)",
-        "Gaussian Filter (Lọc Gauss)",
-        "Mean Filter (Lọc Trung Bình)"
+        "Bilateral Filter",
+        "Median Filter",
+        "Gaussian Filter",
+        "Mean Filter"
     ])
 
     if "Bilateral" in filter_choice:
@@ -403,32 +397,19 @@ ssim_filtered = ssim(clean_img, filtered_img, data_range=255)
 st.markdown("---")
 st.markdown("### 📊 Bảng Đánh Giá Định Lượng & Hiệu Năng Bộ Lọc Hiện Tại")
 
-eval_html = f"""
-<table class="custom-dark-table">
-    <thead>
-        <tr>
-            <th>Trạng thái thực nghiệm</th>
-            <th>PSNR (dB) — [Càng cao càng tốt]</th>
-            <th>SSIM — [Càng gần 1 càng tốt]</th>
-            <th>Thời gian thực thi</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Ảnh Nhiễm Nhiễu Đầu Vào</td>
-            <td>{psnr_raw:.2f} dB</td>
-            <td>{ssim_raw:.4f}</td>
-            <td>{noise_time_ms:.2f} ms</td>
-        </tr>
-        <tr>
-            <td>Sau Khi Khử Nhiễu ({filter_choice.split(' ')[0]})</td>
-            <td>{psnr_filtered:.2f} dB</td>
-            <td>{ssim_filtered:.4f}</td>
-            <td>{exec_time_ms:.2f} ms</td>
-        </tr>
-    </tbody>
-</table>
-"""
+eval_html = (
+    '<table class="custom-dark-table">'
+    '<thead><tr>'
+    '<th>Trạng thái thực nghiệm</th>'
+    '<th>PSNR (dB) — [Càng cao càng tốt]</th>'
+    '<th>SSIM — [Càng gần 1 càng tốt]</th>'
+    '<th>Thời gian thực thi</th>'
+    '</tr></thead>'
+    '<tbody>'
+    f'<tr><td>Ảnh Nhiễm Nhiễu Đầu Vào</td><td>{psnr_raw:.2f} dB</td><td>{ssim_raw:.4f}</td><td>{noise_time_ms:.2f} ms</td></tr>'
+    f'<tr><td>Sau Khi Khử Nhiễu ({filter_choice.split(" ")[0]})</td><td>{psnr_filtered:.2f} dB</td><td>{ssim_filtered:.4f}</td><td>{exec_time_ms:.2f} ms</td></tr>'
+    '</tbody></table>'
+)
 st.markdown(eval_html, unsafe_allow_html=True)
 
 # 7. CASE STUDY TOÀN DIỆN 4 BỘ LỌC (SO SÁNH ĐỒNG BỘ 4 BỘ LỌC)
@@ -495,35 +476,24 @@ with c_show3:
 with c_show4:
     st.image(res_bilateral, caption=f"Bilateral (d={d_val})", use_container_width=True)
 
-# Render bảng so sánh 4 bộ lọc bằng HTML tùy chỉnh để đảm bảo chữ luôn sáng rõ trên mọi theme
-rows_html = ""
-for r in comp_results:
-    rows_html += f"""
-    <tr>
-        <td>{r['Bộ lọc']}</td>
-        <td>{r['PSNR (dB)']:.2f}</td>
-        <td>{r['SSIM']:.4f}</td>
-        <td>{r['Thời gian (ms)']:.2f} ms</td>
-        <td>{r['Nhận xét kỹ thuật']}</td>
-    </tr>
-    """
+# Render bảng so sánh 4 bộ lọc bằng chuỗi HTML liền mạch (không thụt đầu dòng) để tránh lỗi hiện thẻ <tr><td>
+rows_html = "".join([
+    f"<tr><td>{r['Bộ lọc']}</td><td>{r['PSNR (dB)']:.2f}</td><td>{r['SSIM']:.4f}</td><td>{r['Thời gian (ms)']:.2f} ms</td><td>{r['Nhận xét kỹ thuật']}</td></tr>"
+    for r in comp_results
+])
 
-comp_table_html = f"""
-<table class="custom-dark-table">
-    <thead>
-        <tr>
-            <th>Bộ lọc</th>
-            <th>PSNR (dB)</th>
-            <th>SSIM</th>
-            <th>Thời gian (ms)</th>
-            <th>Nhận xét kỹ thuật</th>
-        </tr>
-    </thead>
-    <tbody>
-        {rows_html}
-    </tbody>
-</table>
-"""
+comp_table_html = (
+    '<table class="custom-dark-table">'
+    '<thead><tr>'
+    '<th>Bộ lọc</th>'
+    '<th>PSNR (dB)</th>'
+    '<th>SSIM</th>'
+    '<th>Thời gian (ms)</th>'
+    '<th>Nhận xét kỹ thuật</th>'
+    '</tr></thead>'
+    f'<tbody>{rows_html}</tbody>'
+    '</table>'
+)
 st.markdown(comp_table_html, unsafe_allow_html=True)
 
 fig_bar, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 3.2), facecolor="#07192d")
@@ -556,9 +526,9 @@ st.pyplot(fig_bar)
 plt.close(fig_bar)
 
 if "Gaussian" in noise_type:
-    st.success("🎯 **Kết luận:** Trên mô hình **Nhiễu Gauss**, **Bilateral Filter** và **Gaussian Filter** đạt hiệu quả cao nhất.")
+    st.success("🎯 **Kết luận :** Trên mô hình **Nhiễu Gauss**, **Bilateral Filter** và **Gaussian Filter** đạt hiệu quả cao nhất.")
 else:
-    st.success("🎯 **Kết luận:** Trên mô hình **Nhiễu Muối Tiêu (Salt & Pepper)**, **Median Filter** là bộ lọc tối ưu và vượt trội hoàn toàn.")
+    st.success("🎯 **Kết luận :** Trên mô hình **Nhiễu Muối Tiêu (Salt & Pepper)**, **Median Filter** là bộ lọc tối ưu và vượt trội hoàn toàn.")
 
 st.markdown("""
 <div style="margin-top: 45px; background: #07192c; border-top: 3px solid #1cc9df; padding: 16px; text-align: center; color: #b8cbd9; font-size: 13px; border-radius: 10px;">
