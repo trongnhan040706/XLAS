@@ -193,32 +193,31 @@ c_ref1, c_ref2, c_ref3, c_ref4 = st.columns(4)
 
 with c_ref1:
     with st.container(border=True):
-        st.markdown('<b style="color: #25cbe6;">1. Mean Filter (3×3)</b>', unsafe_allow_html=True)
-        st.latex(r"g(x,y) = \frac{1}{mn} \sum_{(s,t) \in S_{xy}} f(s,t)")
+        st.markdown('<b style="color: #25cbe6;">1. Mean Filter (k×k)</b>', unsafe_allow_html=True)
+        st.latex(r"g(x,y) = \frac{1}{k^2} \sum_{(s,t)\in S_{xy}} f(s,t)")
         st.latex(r"h = \frac{1}{9}\begin{bmatrix} 1 & 1 & 1 \\ 1 & 1 & 1 \\ 1 & 1 & 1 \end{bmatrix}")
-        st.markdown('<div class="ref-note">Chia đều trọng số cho mọi pixel. San phẳng nhiễu nhanh nhưng làm nhòe mờ nghiêm trọng biên cạnh.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="ref-note">Chia đều trọng số cho mọi pixel trong cửa sổ lân cận. San phẳng nhiễu nhanh nhưng làm nhòe mờ biên cạnh.</div>', unsafe_allow_html=True)
 
 with c_ref2:
     with st.container(border=True):
-        st.markdown('<b style="color: #48d39c;">2. Gaussian Filter (3×3)</b>', unsafe_allow_html=True)
-        st.latex(r"G(x,y) = \frac{1}{2\pi\sigma^2} e^{-\frac{x^2+y^2}{2\sigma^2}}")
+        st.markdown('<b style="color: #48d39c;">2. Gaussian Filter</b>', unsafe_allow_html=True)
+        st.latex(r"G(x,y) = \frac{1}{2\pi\sigma^2} \cdot \exp\left(-\frac{x^2+y^2}{2\sigma^2}\right)")
         st.latex(r"h \approx \frac{1}{16}\begin{bmatrix} 1 & 2 & 1 \\ 2 & 4 & 2 \\ 1 & 2 & 1 \end{bmatrix}")
-        st.markdown('<div class="ref-note">Trọng số giảm dần theo hàm Gauss từ tâm ra biên. Làm mịn tự nhiên, triệt tiêu nhiễu Gauss tốt.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="ref-note">Hàm phân phối Gauss liên tục 2 chiều (kỳ vọng bằng 0). Làm mịn tự nhiên, triệt tiêu nhiễu Gauss tốt.</div>', unsafe_allow_html=True)
 
 with c_ref3:
     with st.container(border=True):
         st.markdown('<b style="color: #ffad3d;">3. Median Filter</b>', unsafe_allow_html=True)
-        st.latex(r"\hat{f}(x,y) = \underset{(s,t) \in S_{xy}}{\text{median}} \{g(s,t)\}")
-        st.latex(r"W_{\text{sorted}} \rightarrow \text{phần tử } \frac{mn+1}{2}")
-        st.markdown('<div class="ref-note"><b>Thống kê thứ tự phi tuyến:</b> Sắp xếp lân cận, chọn phần tử chính giữa. Triệt tiêu 100% hạt xung cực trị (0/255) của nhiễu muối tiêu.</div>', unsafe_allow_html=True)
+        st.latex(r"\hat{f}(x,y) = \underset{(s,t)\in S_{xy}}{\text{median}} \{g(s,t)\}")
+        st.latex(r"W_{\text{sorted}} \rightarrow \text{phần tử chính giữa}")
+        st.markdown('<div class="ref-note"><b>Bộ lọc trung vị:</b> Sắp xếp các mức xám lân cận và lấy giá trị ở giữa. Triệt tiêu 100% hạt xung cực trị của nhiễu muối tiêu.</div>', unsafe_allow_html=True)
 
 with c_ref4:
     with st.container(border=True):
         st.markdown('<b style="color: #8e69f2;">4. Bilateral Filter</b>', unsafe_allow_html=True)
-        st.latex(r"I^{\text{filtered}}(x) = \frac{1}{W_p} \sum_{x_i \in \Omega} I(x_i) G_{\sigma_r} G_{\sigma_s}")
-        st.latex(r"w = \exp\left(-\frac{\|x-x_i\|^2}{2\sigma_s^2} - \frac{|I(x)-I(x_i)|^2}{2\sigma_r^2}\right)")
-        st.markdown('<div class="ref-note"><b>Lọc phi tuyến 2 miền:</b> Kết hợp khoảng cách không gian & sai lệch mức xám. Bảo toàn nguyên vẹn biên nét khi khử nhiễu.</div>', unsafe_allow_html=True)
-
+        st.latex(r"I_{\text{filtered}} = \frac{1}{W_P} \sum_{x_i \in \Omega} I(x_i) f_s(\|x_i-x\|) g_r(\|I(x_i)-I(x)\|)")
+        st.latex(r"w = f_s(\cdot) \cdot g_r(\cdot)")
+        st.markdown('<div class="ref-note"><b>Lọc phi tuyến 2 miền:</b> Kết hợp khoảng cách không gian ($f_s$) & độ lệch mức xám ($g_r$). Bảo toàn xuất sắc biên nét.</div>', unsafe_allow_html=True)
 # 4. Hàm Tạo Ảnh Mẫu & Sinh Nhiễu Chuẩn Xác
 def generate_default_sample():
     img = np.zeros((300, 420), dtype=np.uint8)
