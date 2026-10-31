@@ -188,47 +188,36 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# 3. Bảng Tham Chiếu Nhanh Kernel & Công Thức
 st.markdown("### 📑 Bảng Tham Chiếu Nhanh: Kernel & Công Thức Toán Học")
 c_ref1, c_ref2, c_ref3, c_ref4 = st.columns(4)
 
 with c_ref1:
-    st.markdown("""
-    <div class="ref-card" style="border-color: #25cbe6;">
-        <b style="color: #25cbe6;">1. Mean Filter (3×3)</b>
-        <div class="ref-eq">g(x,y) = 1/(mn) ∑ f(s,t)</div>
-        <div class="ref-note"><b>Kernel h = 1/9 × [Ma trận 1]</b><br>Chia đều trọng số cho mọi pixel. San phẳng nhiễu nhanh nhưng làm nhòe mờ nghiêm trọng biên cạnh.</div>
-    </div>
-    """, unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<b style="color: #25cbe6;">1. Mean Filter (3×3)</b>', unsafe_allow_html=True)
+        st.latex(r"g(x,y) = \frac{1}{mn} \sum_{(s,t) \in S_{xy}} f(s,t)")
+        st.latex(r"h = \frac{1}{9}\begin{bmatrix} 1 & 1 & 1 \\ 1 & 1 & 1 \\ 1 & 1 & 1 \end{bmatrix}")
+        st.markdown('<div class="ref-note">Chia đều trọng số cho mọi pixel. San phẳng nhiễu nhanh nhưng làm nhòe mờ nghiêm trọng biên cạnh.</div>', unsafe_allow_html=True)
 
 with c_ref2:
-    st.markdown("""
-    <div class="ref-card" style="border-color: #48d39c;">
-        <b style="color: #48d39c;">2. Gaussian Filter (3×3)</b>
-        <div class="ref-eq">G(x,y) ∝ exp(-(x²+y²)/(2σ²))</div>
-        <div class="ref-note"><b>Kernel h ≈ 1/16 × [[1,2,1],[2,4,2],[1,2,1]]</b><br>Trọng số giảm dần theo hàm Gauss từ tâm ra biên. Làm mịn tự nhiên, triệt tiêu nhiễu Gauss tốt.</div>
-    </div>
-    """, unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<b style="color: #48d39c;">2. Gaussian Filter (3×3)</b>', unsafe_allow_html=True)
+        st.latex(r"G(x,y) = \frac{1}{2\pi\sigma^2} e^{-\frac{x^2+y^2}{2\sigma^2}}")
+        st.latex(r"h \approx \frac{1}{16}\begin{bmatrix} 1 & 2 & 1 \\ 2 & 4 & 2 \\ 1 & 2 & 1 \end{bmatrix}")
+        st.markdown('<div class="ref-note">Trọng số giảm dần theo hàm Gauss từ tâm ra biên. Làm mịn tự nhiên, triệt tiêu nhiễu Gauss tốt.</div>', unsafe_allow_html=True)
 
 with c_ref3:
-    st.markdown("""
-    <div class="ref-card" style="border-color: #ffad3d;">
-        <b style="color: #ffad3d;">3. Median Filter</b>
-        <div class="ref-eq">g(x,y) = median{W(x,y)}</div>
-        <div class="ref-note"><b>Thống kê thứ tự phi tuyến</b><br>Sắp xếp lân cận, chọn phần tử chính giữa. Triệt tiêu 100% hạt xung cực trị (0/255) của nhiễu muối tiêu.</div>
-    </div>
-    """, unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<b style="color: #ffad3d;">3. Median Filter</b>', unsafe_allow_html=True)
+        st.latex(r"\hat{f}(x,y) = \underset{(s,t) \in S_{xy}}{\text{median}} \{g(s,t)\}")
+        st.latex(r"W_{\text{sorted}} \rightarrow \text{phần tử } \frac{mn+1}{2}")
+        st.markdown('<div class="ref-note"><b>Thống kê thứ tự phi tuyến:</b> Sắp xếp lân cận, chọn phần tử chính giữa. Triệt tiêu 100% hạt xung cực trị (0/255) của nhiễu muối tiêu.</div>', unsafe_allow_html=True)
 
 with c_ref4:
-    st.markdown("""
-    <div class="ref-card" style="border-color: #8e69f2;">
-        <b style="color: #8e69f2;">4. Bilateral Filter</b>
-        <div class="ref-eq">I_filtered = 1/Wp ∑ G_σs · G_σr · I_q</div>
-        <div class="ref-note"><b>Lọc phi tuyến 2 miền</b><br>Kết hợp khoảng cách không gian & sai lệch mức xám. Bảo toàn nguyên vẹn biên nét khi khử nhiễu.</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<b style="color: #8e69f2;">4. Bilateral Filter</b>', unsafe_allow_html=True)
+        st.latex(r"I^{\text{filtered}}(x) = \frac{1}{W_p} \sum_{x_i \in \Omega} I(x_i) G_{\sigma_r} G_{\sigma_s}")
+        st.latex(r"w = \exp\left(-\frac{\|x-x_i\|^2}{2\sigma_s^2} - \frac{|I(x)-I(x_i)|^2}{2\sigma_r^2}\right)")
+        st.markdown('<div class="ref-note"><b>Lọc phi tuyến 2 miền:</b> Kết hợp khoảng cách không gian & sai lệch mức xám. Bảo toàn nguyên vẹn biên nét khi khử nhiễu.</div>', unsafe_allow_html=True)
 
 # 4. Hàm Tạo Ảnh Mẫu & Sinh Nhiễu Chuẩn Xác
 def generate_default_sample():
